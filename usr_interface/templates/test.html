@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> avr_gui</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='test.css') }}">
+</head>
+<body>
+<canvas id ="canvas" width="600" height="350"></canvas>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
+<script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script type=text/javascript>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type="text/javascript">
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var color = {'red':0, 'yellow':0, 'green':0, 'white':0};
+init();
+function init(){  
+  gradient();
+  text();
+  graph_text();
+  drawCircle(100, "#fcc");
+  strokeCircle(100, "#f00");
+  drawCircle(200, "#ffc");
+  strokeCircle(200, "#ffc");
+  drawCircle(300, "#cfc");
+  strokeCircle(300, "#cfc");
+  drawCircle(400, "#000");
+  strokeCircle(400, "#000");
+ // setInterval(updateGraph,1000); 
+  canvas.addEventListener("click", updateColor, false);
+  //canvas.addEventListener("click", updateGraph, false);
+  ctx.fillStyle ="#000";
+  ctx.fillRect(499,24,42,258);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(500,25,40,255);
+}
+function gradient(){
+  var grd=ctx.createLinearGradient(0,0,5,canvas.width,canvas.height,100);
+  grd.addColorStop(0,"black");
+  grd.addColorStop(1,"white");
+
+  // Fill with gradient
+  ctx.fillStyle=grd;
+  ctx.fillRect(0,0,700,700);
+}
+
+function text(){
+  ctx.font="30px Verdana";
+  var gradient=ctx.createLinearGradient(0,0,canvas.width,0);
+  gradient.addColorStop("0","green");
+  gradient.addColorStop("0.5","blue");
+  gradient.addColorStop("1.0","red");
+  ctx.fillStyle=gradient;
+  ctx.fillText("AVR USER INTERFACE",100,250);
+}
+
+
+function graph_text(){
+  ctx.font="10px Verdana";
+  ctx.fillText("_5.0V",545,25)
+  ctx.fillText("_4.5V",545,50);
+  ctx.fillText("_4.0V",545,75);
+  ctx.fillText("_3.5V",545,100);
+  ctx.fillText("_3.0V",545,125);
+  ctx.fillText("_2.5V",545,150);
+  ctx.fillText("_2.0V",545,175);
+  ctx.fillText("_1.5V",545,200);
+  ctx.fillText("_1.0V",545,225);
+  ctx.fillText("_0.5V",545,250);
+  ctx.fillText("_0.0V",545,275); 
+}
+
+//var value = inter;
+//alert(value);
+//var response = JSON.parse('{"key":new}');
+//alert(response.key)
+setInterval(function updateGraph(){
+//  var x = e.pageX;
+  //var y = e.pageY;
+  //  var x;
+   /// var y;
+ // if(x > 499 && x <541 && y > 24 && y <300){
+$.getJSON($SCRIPT_ROOT + "/_new", {ADC_COMMAND:1}, function(volt){var inter = volt.key;
+//alert(inter);
+var a = inter;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(500,25,40,255);
+    ctx.fillStyle = "#a0c";
+    ctx.fillRect(500,280-a,40,a);
+});//{$("#result").text(x);})
+ 
+}, 1000);
+
+
+function updateColor(e){
+  var x = e.pageX;
+  var y = e.pageY;
+  if (75 < x && 125 > x && 75 < y && y <125){
+    if(color.red){
+      drawCircle(100, "#fcc");
+      color.red = 0;
+      }
+    else{
+      drawCircle(100, "#e00");
+      color.red = 1;
+     }
+   
+   }
+   else if(175 < x && 225 > x && 75 < y && y <125){
+     if(color.yellow){
+       drawCircle(200, "#ffc");
+       color.yellow = 0;
+      }
+     else{
+       drawCircle(200,"#fe0");
+       color.yellow =1;
+      }
+}
+   else if(275 < x && 325 > x && 75 < y && y < 125){
+     if(color.green){
+       drawCircle(300, "#cfc");
+       color.green = 0;
+      }
+     else{
+       drawCircle(300, "#0e0");
+       color.green = 1;
+      }
+}
+    else if(375 < x && 425 > x && 75 < y && y <125){
+      if(color.white){
+        drawCircle(400, "#000");
+        color.white = 0;
+       }
+      else{
+        drawCircle(400, "#fff");
+        color.white = 1;
+      }
+ 
+}
+//$.get($SCRIPT_ROOT + "/",{ledred:color.red, ledgreen:color.green, ledwhite:color.white,ledyellow:color.yellow}, function(data){alert("Data loaded:" + data.inter);});
+$.getJSON($SCRIPT_ROOT + "/", {ledred:color.red, ledgreen:color.green, ledwhite:color.white, ledyellow:color.yellow})
+//alert(clr);
+}
+
+
+function drawCircle(p, col){
+  ctx.beginPath();
+  ctx.arc(p,100,25,0, Math.PI*2, false);
+  ctx.closePath();
+  ctx.fillStyle = col;
+  ctx.fill();
+}
+function strokeCircle(p,col){
+  ctx.beginPath();
+  ctx.arc(p,100,26,0, Math.PI *2,false);
+  ctx.closePath();
+  ctx.strokeStyle = "#eee";
+  ctx.stroke();
+}
+
+</script>
+</body>
+</html>
